@@ -1,0 +1,5 @@
+@keyframes GroupButtonFadeUp {
+    to {
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,16 @@
+:root {
+  --color-red: #ff0000;
+  --color-red-deeper: #d50000;
+  --color-green: #59a849;
+  --color-green-deeper: #3b6d31;
+  --color-green-deeper-trans: rgba(59, 109, 49, 0.4);
+  --color-green-deeper2: #284b21;
+  --color-green2: #a1ff8e;
+  --color-white: #ffffff;
+  --color-white-trans: rgba(255, 255, 255, 0.25);
+  --color-white-trans2: rgba(255, 255, 255, 0.5);
+  --color-white-trans3: rgba(255, 255, 255, 0.75);
+  --color-gray: #777777;
+  --color-gray-lighter: #939393;
+  --color-black: #000000;
+}
