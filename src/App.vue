@@ -1,12 +1,32 @@
 <script setup>
+import { onMounted } from "vue";
 import { default as Titlebar } from "$/public/Titlebar/Bar.vue";
+import { ModJava } from "./plugins/common/Java.js";
+import { writeJsonFile, YMSL_TEMP_PATH } from "./plugins/common/FileHandler";
+
+onMounted(async () => {
+    // Java Finding
+    if (
+        localStorage.getItem("isFirstLoad") === "true" ||
+        localStorage.getItem("isFirstLoad") === null
+    ) {
+        const ModuleJava = new ModJava();
+        const resp = await ModuleJava.main();
+        setTimeout(() => {
+            writeJsonFile(`${YMSL_TEMP_PATH}\\java.tmp.json`, resp);
+            localStorage.setItem("isFirstLoad", "false");
+        }, 5000);
+    }
+});
 </script>
 
 <template>
     <div id="Window">
         <Titlebar data-tauri-drag-region />
         <div id="Body">
-            <RouterView />
+            <Suspense>
+                <RouterView />
+            </Suspense>
         </div>
     </div>
     <div id="changePageDoor"></div>

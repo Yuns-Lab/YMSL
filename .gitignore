@@ -26,4 +26,4 @@ dist-ssr
 # Plugins & DevTools & LocalFiles
 .plugins/
 cli.bat
-src-tauri/.lmsl/
+src-tauri/.ymsl/temp/*.json

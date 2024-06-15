@@ -1,15 +1,39 @@
-import { readTextFile, writeTextFile } from "@tauri-apps/api/fs";
+import { readTextFile, writeTextFile, exists } from "@tauri-apps/api/fs";
 
 export const readJsonFile = (path) => {
     return new Promise((resolve, reject) => {
-        readTextFile(path, { encoding: "utf-8" })
-            .then((data) => {
-                resolve(JSON.parse(data));
-            })
-            .catch((error) => {
-                console.error("Error reading JSON file:", error);
-                reject(error);
-            });
+        exists(path).then((exists) => {
+            if (exists) {
+                readTextFile(path, { encoding: "utf-8" })
+                    .then((data) => {
+                        resolve(JSON.parse(data));
+                    })
+                    .catch((error) => {
+                        console.error("Error reading JSON file:", error);
+                        reject(error);
+                    });
+            } else {
+                if (path.includes("config.json")) {
+                    const obj = {
+                        launch: {
+                            java: "auto",
+                        },
+                    };
+                    writeTextFile(path, JSON.stringify(obj, null, 4), {
+                        encoding: "utf-8",
+                    }).then(() => {
+                        resolve(obj);
+                    });
+                } else {
+                    const obj = [];
+                    writeTextFile(path, JSON.stringify(obj, null, 4), {
+                        encoding: "utf-8",
+                    }).then(() => {
+                        resolve(obj);
+                    });
+                }
+            }
+        });
     });
 };
 
@@ -28,5 +52,5 @@ export const writeJsonFile = (path, data) => {
     });
 };
 
-export const LMSL_DATA_PATH = ".ymsl";
-export const LMSL_TEMP_PATH = ".ymsl\\temp";
+export const YMSL_DATA_PATH = ".ymsl";
+export const YMSL_TEMP_PATH = ".ymsl\\temp";

@@ -5,7 +5,7 @@ import { ElCard } from "element-plus";
 <template>
     <ElCard>
         <template #header>
-            <slot name="title"></slot>
+            <slot name="header"></slot>
         </template>
         <slot></slot>
     </ElCard>

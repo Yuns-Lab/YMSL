@@ -1,14 +1,24 @@
 <script setup>
 import { ElCard, ElButton, ElIcon } from "element-plus";
 import { Select } from "@element-plus/icons-vue";
+
 const props = defineProps({
     choosed: Boolean,
 });
+
+const emit = defineEmits(["choose"]);
+
+const choose = () => {
+    if (!props.choosed) emit("choose");
+};
 </script>
 
 <template>
     <div class="JavaSettingItem">
-        <ElCard class="JSI__card" :class="{ green: props.choosed }">
+        <ElCard
+            class="JSI__card"
+            :class="{ green: props.choosed }"
+            @click="choose()">
             <span class="JSI__card_content">
                 <span style="width: 16px">
                     <ElIcon
@@ -28,9 +38,6 @@ const props = defineProps({
                 <span style="margin-left: 36px">
                     <slot name="javaPath"></slot>
                 </span>
-                <ElButton v-if="!props.choosed" style="margin-left: auto">
-                    选择
-                </ElButton>
             </span>
         </ElCard>
     </div>
@@ -43,8 +50,10 @@ div.JavaSettingItem {
 
 .el-card.JSI__card {
     height: 44px;
+    cursor: pointer;
     &.green {
         background-color: var(--color-green2);
+        cursor: auto;
     }
     .el-card__body {
         padding-top: 6px;

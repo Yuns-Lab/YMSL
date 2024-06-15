@@ -5,10 +5,12 @@ import Card from "$/public/Card.vue";
 import JavaSettingItem from "$/!Settings/JavaSettingItem.vue";
 import {
     readJsonFile,
-    LMSL_DATA_PATH,
-    LMSL_TEMP_PATH,
+    writeJsonFile,
+    YMSL_DATA_PATH,
+    YMSL_TEMP_PATH,
 } from "@/plugins/common/FileHandler.js";
-import { ElScrollbar } from "element-plus";
+import { ElScrollbar, ElButton } from "element-plus";
+import { ModJava } from "../plugins/common/Java";
 
 const config = reactive({
     pageNow: 0,
@@ -21,12 +23,33 @@ const handleSwitchPage = (payload) => {
     config.pageNow = payload.page;
 };
 
+const handleChoose = async (payload) => {
+    const oldJson = await readJsonFile(`${YMSL_DATA_PATH}\\config.json`);
+    oldJson["launch"]["java"] = payload;
+    await writeJsonFile(`${YMSL_DATA_PATH}\\config.json`, oldJson);
+    config.choose_now = payload;
+};
+
+const forceResearchJava = async () => {
+    config.is_loaded = false;
+    const ModuleJava = new ModJava();
+    const resp = await ModuleJava.main();
+    setTimeout(() => {
+        writeJsonFile(`${YMSL_TEMP_PATH}\\java.tmp.json`, resp);
+        config.java_list = resp;
+        config.is_loaded = true;
+    }, 5000);
+};
+
 onMounted(() => {
     setTimeout(() => {
-        readJsonFile(`${LMSL_TEMP_PATH}\\java.tmp.json`).then((data) => {
+        readJsonFile(`${YMSL_TEMP_PATH}\\java.tmp.json`).then((data) => {
             config.java_list = data;
-            config.is_loaded = true;
         });
+        readJsonFile(`${YMSL_DATA_PATH}\\config.json`).then((data) => {
+            config.choose_now = data["launch"]["java"];
+        });
+        config.is_loaded = true;
     }, 3000);
 });
 </script>
@@ -40,14 +63,31 @@ onMounted(() => {
                     class="LSettings__page"
                     :class="{ active: config.pageNow == 0 }">
                     <Card>
-                        <template #title>Java 设置</template>
+                        <template #header>
+                            <div id="LSJavaHeader">
+                                <span>Java 设置</span>
+                                <ElButton
+                                    type="success"
+                                    effect="dark"
+                                    plain
+                                    :disabled="!config.is_loaded"
+                                    style="margin-left: auto"
+                                    @click="forceResearchJava()"
+                                    >刷新</ElButton
+                                >
+                            </div>
+                        </template>
                         <div v-if="config.is_loaded">
-                            <JavaSettingItem :choosed="true">
+                            <JavaSettingItem
+                                @click="handleChoose('auto')"
+                                :choosed="config.choose_now == 'auto'">
                                 <template #javaName>自动选择</template>
                             </JavaSettingItem>
                             <JavaSettingItem
                                 v-for="java in config.java_list"
-                                :key="java.path">
+                                :key="java.path"
+                                :choosed="config.choose_now == java.path"
+                                @click="handleChoose(java.path)">
                                 <template #javaName>
                                     {{
                                         java.version.startsWith("8")
@@ -98,5 +138,11 @@ div#LSettings {
             }
         }
     }
+}
+
+div#LSJavaHeader {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 </style>

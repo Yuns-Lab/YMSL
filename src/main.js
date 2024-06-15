@@ -32,18 +32,3 @@ appWindow.listen("tauri://unmaximize", () => {
 
 // Set refresh mark
 localStorage.setItem("is_refresh", "true");
-
-// Java Finding
-import { ModJava } from "./plugins/common/Java.js";
-import { writeJsonFile, LMSL_TEMP_PATH } from "./plugins/common/FileHandler";
-if (
-    localStorage.getItem("isFirstLoad") === "true" ||
-    localStorage.getItem("isFirstLoad") === null
-) {
-    const ModuleJava = new ModJava();
-    const resp = await ModuleJava.main();
-    setTimeout(() => {
-        writeJsonFile(`${LMSL_TEMP_PATH}\\java.tmp.json`, resp)
-        localStorage.setItem("isFirstLoad", "false");
-    }, 5000);
-}
